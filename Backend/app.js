@@ -12,7 +12,7 @@ const app = express();
 
 
 const userRoutes = require('./routes/user.routes');
-
+const workflowRoutes = require('./routes/workflow.routes');
 const postRoutes = require('./routes/post.routes');
 
 
@@ -23,6 +23,7 @@ app.use('/api/users', userRoutes);
 
 app.use('/api/auth', authRoutes);
 app.use('/api/posts', postRoutes);
+app.use('/api/workflows', workflowRoutes);
 
 app.get('/', (req, res) => res.send('API running'));
 

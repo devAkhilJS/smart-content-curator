@@ -2,7 +2,15 @@ const User = require('../models/user.model');
 
 exports.getAllUsers = async (req, res) => {
   try {
-    const users = await User.find().select('-password');
+    const filter = {};
+    
+    if (req.query.role) {
+      filter.role = req.query.role;
+    }
+    if (req.query.status) {
+      filter.status = req.query.status;
+    }
+    const users = await User.find(filter).select('-password');
     res.json(users);
   } catch (err) {
     res.status(500).json({ error: err.message });

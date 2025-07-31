@@ -111,3 +111,43 @@ exports.reviewPost = async (req, res) => {
     res.status(400).json({ error: err.message });
   }
 };
+
+exports.getWeeklyDigest = async (req, res) => {
+  try {
+    
+    const since = new Date();
+    since.setDate(since.getDate() - 7);
+
+    let query = { createdAt: { $gte: since } };
+
+    if (req.user.role !== 'admin') {
+      query.author = req.user.userId;
+    }
+
+    const posts = await Post.find(query)
+      .populate('author', 'name email role')
+      .sort({ createdAt: -1 });
+
+    res.json({
+      total: posts.length,
+      posts,
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+exports.getDraftPosts = async (req, res) => {
+  try {
+    let query = { status: 'draft' };
+    if (req.user.role !== 'admin') {
+      query.author = req.user.userId;
+    }
+    const drafts = await Post.find(query)
+      .populate('author', 'name email role')
+      .sort({ createdAt: -1 });
+    res.json({ drafts });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+

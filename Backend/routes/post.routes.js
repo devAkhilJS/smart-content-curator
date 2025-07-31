@@ -7,6 +7,8 @@ const role = require('../middlewares/role.middleware');
 router.use(auth);
 
 router.post('/', postController.createPost);
+router.get('/weekly-digest', postController.getWeeklyDigest); 
+router.get('/drafts', postController.getDraftPosts);          
 router.get('/', postController.getPosts);
 router.get('/:id', postController.getPostById);
 router.put('/:id', postController.updatePost);

@@ -1,0 +1,131 @@
+{
+  "name": "Draft Reminder Workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 9 * * *"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "776063ad-38b1-4b14-8371-951a6bdbf526",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "url": " https://862b1f075722.ngrok-free.app/api/posts/drafts",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODg3ODY4OWM5ZTcyOGIxMDlkMTU1NDAiLCJyb2xlIjoidXNlciIsImlhdCI6MTc1Mzk2ODY0NSwiZXhwIjoxNzU0NTczNDQ1fQ.GMr2b6FdTXf1_S-3VDqoU2LnT1YECxqLGoYNMR9y6Xw"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        220,
+        0
+      ],
+      "id": "a82d6198-906d-4cff-aba2-66be2b4f962d",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "jsCode": "const drafts = items[0].json.drafts;\nconst userDrafts = {};\n\ndrafts.forEach(draft => {\n  const email = draft.author.email;\n  if (!userDrafts[email]) userDrafts[email] = [];\n  userDrafts[email].push(draft.title);\n});\n\nreturn Object.entries(userDrafts).map(([email, titles]) => ({\n  json: { email, titles }\n}));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        440,
+        0
+      ],
+      "id": "ceb2cb81-ce44-45e0-85e8-762ae30376f0",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.email }}",
+        "subject": "Reminder: You have draft posts pending",
+        "message": "=Hi,  You have the following drafts pending: - {{ $json.titles.join('\\n- ') }}  Please complete or publish them soon!",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        660,
+        0
+      ],
+      "id": "7120714f-2781-46ef-8a5d-496ba8c9c57c",
+      "name": "Send a message",
+      "webhookId": "1207f108-6284-4b69-8ac8-ebeeaae08b41",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "0YXf8hQbvhi3WFwV",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "82ec3362-6152-47ed-8297-ea9ccab9fca7",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "83b761825fe009c350ac0b22db13da3271ed1c3fb3c350cd3dffb40fbed22eb0"
+  },
+  "id": "nHrwLngtAIWlbhG0",
+  "tags": []
+}

@@ -1,0 +1,248 @@
+{
+  "name": "content approval",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "c40e2599-a957-4c47-871c-b62b0c03619c",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -260,
+        -120
+      ],
+      "id": "47ce17b1-223a-404c-81ce-4f1e6b0af035",
+      "name": "Webhook",
+      "webhookId": "c40e2599-a957-4c47-871c-b62b0c03619c"
+    },
+    {
+      "parameters": {
+        "url": "=  https://38c5af60fb68.ngrok-free.app/api/users?role=admin ",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODg3MWRjNzI0NmFiMGM5YmI3N2M3ZWUiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3NTM4NjczMjYsImV4cCI6MTc1NDQ3MjEyNn0.eHJNEbRFdBLXvBoAh-yWdVQCUE6DitLFMmKWVAtYpdI"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        280,
+        -240
+      ],
+      "id": "3e71278c-cb46-49c3-9eda-cd8034ba8305",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.email }}",
+        "subject": "=New Post Awaiting Approval:{{ $json.title }}",
+        "message": "=A new post has been submitted for review.<br>\n<b>Title:</b> {{ $json.title }}<br>\n<b>Author ID:</b> {{ $json.author._id }}<br>\n<b>Submitted At:</b> {{$json.createdAt}}<br>\n<b>View Post:</b> <a href=\"https://your-admin-ui.com/post/{{$json._id}}\">Review Post</a>\n<a href=\"https://pleasant-macaw-deadly.ngrok-free.app/webhook/approval?postId={{$json._id}}&action=approved\">Accept</a>\n<a href=\"https://pleasant-macaw-deadly.ngrok-free.app/webhook/approval?postId={{$json._id}}&action=rejected\">Reject</a>",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1040,
+        300
+      ],
+      "id": "6ba9cb3c-cf99-4f2c-b352-8a93b5708cbc",
+      "name": "Send a message",
+      "webhookId": "686cab1c-b354-44d4-ad27-92ee82c07d44",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "0YXf8hQbvhi3WFwV",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=  https://38c5af60fb68.ngrok-free.app/api/posts",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "status ",
+              "value": "pending"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODg3ODY4OWM5ZTcyOGIxMDlkMTU1NDAiLCJyb2xlIjoidXNlciIsImlhdCI6MTc1Mzg3NTY3NiwiZXhwIjoxNzU0NDgwNDc2fQ.5UhL_BTtaLkodGedi4uEXCEMs9KrzP8A2n0obmA7w8I"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        320,
+        40
+      ],
+      "id": "a46682d1-3841-4dee-8e17-7a2173d145ad",
+      "name": "HTTP Request1"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineAll",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        680,
+        -20
+      ],
+      "id": "1f5ca895-868a-46db-a08e-a6a9da2d83ba",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1320,
+        -160
+      ],
+      "id": "db415e5b-b07f-489d-9822-9267afcf95b7",
+      "name": "Send a message1",
+      "webhookId": "9b452adf-191b-4b81-9156-4040e2a57bba",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "0YXf8hQbvhi3WFwV",
+          "name": "Gmail account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "=https://dba3e6ae9bfd.ngrok-free.app/api/posts/ {{ $json._id }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODg3ODY4OWM5ZTcyOGIxMDlkMTU1NDAiLCJyb2xlIjoidXNlciIsImlhdCI6MTc1Mzg3NTY3NiwiZXhwIjoxNzU0NDgwNDc2fQ.5UhL_BTtaLkodGedi4uEXCEMs9KrzP8A2n0obmA7w8I"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "status",
+              "value": "={{$json.action}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1100,
+        -160
+      ],
+      "id": "711a67c5-6a68-4233-a701-53db51a70656",
+      "name": "HTTP Request2",
+      "disabled": true
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Send a message": {
+      "main": [
+        []
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request2": {
+      "main": [
+        [
+          {
+            "node": "Send a message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "8d900bda-60d7-43c8-a1d5-fd69f9f880a2",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "83b761825fe009c350ac0b22db13da3271ed1c3fb3c350cd3dffb40fbed22eb0"
+  },
+  "id": "dUn884gl6dIrLZf7",
+  "tags": []
+}

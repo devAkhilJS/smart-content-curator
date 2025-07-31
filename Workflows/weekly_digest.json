@@ -1,0 +1,143 @@
+{
+  "name": "weekly digest",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "weeks",
+              "triggerAtDay": [
+                1
+              ],
+              "triggerAtHour": 8
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "6ed9310d-7c10-47fa-be05-48d1728f9820",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "url": "https://862b1f075722.ngrok-free.app/api/posts/weekly-digest",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "status ",
+              "value": "active"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODg3MWRjNzI0NmFiMGM5YmI3N2M3ZWUiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3NTM5NjQ0ODMsImV4cCI6MTc1NDU2OTI4M30.UlgVTBe7R8BxY0IA0GXgRHW9JH2XnOKRHnjDoioxiwc"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        220,
+        0
+      ],
+      "id": "616e892b-8bff-40fc-8001-5f969a5c6485",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "jsCode": "const digest = items[0].json;\nconst posts = digest.posts || [];\nconst emails = [...new Set(posts.map(post => post.author.email))];\n\nlet message = `<h2>📰 Weekly Digest</h2>`;\nmessage += `<p><b>Total posts:</b> ${digest.total}</p>`;\nmessage += \"<ol>\";\n\nposts.forEach((post, i) => {\n  message += `<li>\n    <b>${post.title}</b> <i>by</i> ${post.author.name} (${post.author.role})<br>\n    <b>Status:</b> ${post.status}<br>\n    <b>Created:</b> ${new Date(post.createdAt).toLocaleString()}\n  </li>`;\n});\n\nmessage += \"</ol>\";\n\nreturn [{ json: { emails: emails.join(', '), message } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        440,
+        0
+      ],
+      "id": "377f6c3b-0063-4f1d-94bc-1453abf3e6b0",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.emails }}",
+        "subject": "Weekly Activity updates",
+        "message": "={{ $json.message }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        660,
+        0
+      ],
+      "id": "244466c3-e596-48ae-8f9b-0525fbcd15ad",
+      "name": "Send a message",
+      "webhookId": "2bc2d475-eeb4-4aee-a105-a647b5ce91a8",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "0YXf8hQbvhi3WFwV",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "f3cbb6ad-4591-48bf-88d5-3da554b39c5b",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "83b761825fe009c350ac0b22db13da3271ed1c3fb3c350cd3dffb40fbed22eb0"
+  },
+  "id": "9ELdFh5r47jS3JFb",
+  "tags": []
+}

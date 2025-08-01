@@ -1,0 +1,136 @@
+{
+  "name": "weekly digest for admin",
+  "nodes": [
+    {
+      "parameters": {
+        "url": "https://0f2e19b70feb.ngrok-free.app/api/posts/weekly-digest",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "status ",
+              "value": "active"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODg3MWRjNzI0NmFiMGM5YmI3N2M3ZWUiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3NTM5NjQ0ODMsImV4cCI6MTc1NDU2OTI4M30.UlgVTBe7R8BxY0IA0GXgRHW9JH2XnOKRHnjDoioxiwc"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        220,
+        0
+      ],
+      "id": "56c94858-fd66-489e-8b15-af9faaee3966",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "jsCode": "const digest = items[0].json;\nconst posts = digest.posts || [];\nconst emails = [...new Set(posts.map(post => post.author.email))];\n\nlet message = `<h2>📰 Weekly Digest</h2>`;\nmessage += `<p><b>Total posts:</b> ${digest.total}</p>`;\nmessage += \"<ol>\";\n\nposts.forEach((post, i) => {\n  message += `<li>\n    <b>${post.title}</b> <i>by</i> ${post.author.name} (${post.author.role})<br>\n    <b>Status:</b> ${post.status}<br>\n    <b>Created:</b> ${new Date(post.createdAt).toLocaleString()}\n  </li>`;\n});\n\nmessage += \"</ol>\";\n\nreturn [{ json: { emails: emails.join(', '), message } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        440,
+        0
+      ],
+      "id": "98128024-364a-4175-95b4-91d478146602",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.emails }}",
+        "subject": "Weekly Activity updates",
+        "message": "={{ $json.message }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        660,
+        0
+      ],
+      "id": "03ceb767-c371-44b7-8512-bfcf210d557b",
+      "name": "Send a message",
+      "webhookId": "2bc2d475-eeb4-4aee-a105-a647b5ce91a8",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "0YXf8hQbvhi3WFwV",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "46a7de11-c523-4cf3-b62f-b6cdd3f6653d",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "28bd254e-c6da-474d-acff-311bcf16f399",
+      "name": "Webhook",
+      "webhookId": "46a7de11-c523-4cf3-b62f-b6cdd3f6653d"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "2e3d80bb-3f64-47a7-9b97-cb0ea0d8ed35",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "83b761825fe009c350ac0b22db13da3271ed1c3fb3c350cd3dffb40fbed22eb0"
+  },
+  "id": "iRB69nvqzT5ZE7TW",
+  "tags": []
+}

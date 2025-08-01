@@ -1,0 +1,250 @@
+{
+  "name": "Auto post schedule workflow for admin",
+  "nodes": [
+    {
+      "parameters": {
+        "url": "https://0f2e19b70feb.ngrok-free.app/api/posts?status=scheduled&due=true",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODg3MWRjNzI0NmFiMGM5YmI3N2M3ZWUiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3NTM3ODE4NDgsImV4cCI6MTc1NDM4NjY0OH0.hBlx7AU_2JUyA2zGYHXP_pACSbpv2I_6G589GEyHfV8"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -1060,
+        260
+      ],
+      "id": "3a3fe8da-c288-4c4f-ab67-d9cea0241560",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "5015493b-8a4c-4b6d-96df-3126b59284ed",
+              "leftValue": "={{ $json._id }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -840,
+        260
+      ],
+      "id": "4d5b8765-6793-43ae-975a-9b1a3be402c8",
+      "name": "If"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -460,
+        500
+      ],
+      "id": "75e4350b-ea53-4d43-8a57-cbe55c737c87",
+      "name": "No Operation, do nothing"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -360,
+        40
+      ],
+      "id": "57b33b9c-b9e7-4f11-867a-7e75b1747db2",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.telegram.org/bot8064487071:AAFqhjYEIC-fcOnpxXrZGcduDb344BwWmCY/sendMessage",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "chat_id",
+              "value": "2023536953"
+            },
+            {
+              "name": "text",
+              "value": "={{$json[\"title\"]}}\\n\\n{{$json[\"body\"]}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -140,
+        100
+      ],
+      "id": "e4acf319-695d-4f52-a019-4a313233f22b",
+      "name": "HTTP Request1"
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "=https://a587cb4df717.ngrok-free.app/api/posts/{{ $('HTTP Request').item.json._id }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODg3MWRjNzI0NmFiMGM5YmI3N2M3ZWUiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3NTM3ODE4NDgsImV4cCI6MTc1NDM4NjY0OH0.hBlx7AU_2JUyA2zGYHXP_pACSbpv2I_6G589GEyHfV8"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "status",
+              "value": "published"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        140,
+        100
+      ],
+      "id": "aa1f6b1f-6a90-4c14-a484-90e5b0854586",
+      "name": "HTTP Request2"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "7b79bfff-06b3-4a7b-acb6-92dd6169579a",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -1380,
+        280
+      ],
+      "id": "b88a5e53-8de5-461b-872a-42dd3018ee70",
+      "name": "Webhook",
+      "webhookId": "7b79bfff-06b3-4a7b-acb6-92dd6169579a"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request2": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "b2affed1-3d21-4a93-9985-69566657727e",
+  "meta": {
+    "instanceId": "83b761825fe009c350ac0b22db13da3271ed1c3fb3c350cd3dffb40fbed22eb0"
+  },
+  "id": "wHXrG5uCjsNnWaoJ",
+  "tags": []
+}

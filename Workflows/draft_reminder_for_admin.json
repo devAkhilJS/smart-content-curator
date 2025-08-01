@@ -1,0 +1,126 @@
+{
+  "name": "draft reminder for admin",
+  "nodes": [
+    {
+      "parameters": {
+        "url": " https://0f2e19b70feb.ngrok-free.app/api/posts/drafts",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODg3ODY4OWM5ZTcyOGIxMDlkMTU1NDAiLCJyb2xlIjoidXNlciIsImlhdCI6MTc1Mzk2ODY0NSwiZXhwIjoxNzU0NTczNDQ1fQ.GMr2b6FdTXf1_S-3VDqoU2LnT1YECxqLGoYNMR9y6Xw"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        220,
+        0
+      ],
+      "id": "ca50eddf-71f8-47b4-97f3-f440cafe5b35",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "jsCode": "const drafts = items[0].json.drafts;\nconst userDrafts = {};\n\ndrafts.forEach(draft => {\n  const email = draft.author.email;\n  if (!userDrafts[email]) userDrafts[email] = [];\n  userDrafts[email].push(draft.title);\n});\n\nreturn Object.entries(userDrafts).map(([email, titles]) => ({\n  json: { email, titles }\n}));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        440,
+        0
+      ],
+      "id": "c4b414d2-194e-4120-8b7b-2db16cc4634f",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.email }}",
+        "subject": "Reminder: You have draft posts pending",
+        "message": "=Hi,  You have the following drafts pending: - {{ $json.titles.join('\\n- ') }}  Please complete or publish them soon!",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        660,
+        0
+      ],
+      "id": "d184b552-6c2e-4d6b-8b69-6bb76aa1dc36",
+      "name": "Send a message",
+      "webhookId": "1207f108-6284-4b69-8ac8-ebeeaae08b41",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "0YXf8hQbvhi3WFwV",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "8ccc5215-495c-4c20-8186-f87a768dbdec",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "f6b08f09-acc7-421a-bc6b-be0bbe9d4c86",
+      "name": "Webhook",
+      "webhookId": "8ccc5215-495c-4c20-8186-f87a768dbdec"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "e7d51cf5-e925-4b82-b283-7b21bbfbe74d",
+  "meta": {
+    "instanceId": "83b761825fe009c350ac0b22db13da3271ed1c3fb3c350cd3dffb40fbed22eb0"
+  },
+  "id": "7BVeoUwfi4c6LXwy",
+  "tags": []
+}

@@ -5,28 +5,24 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 const connectDB = require('./config/db');
-
 const authRoutes = require('./routes/auth.routes');
-
 const app = express();
-
-
 const userRoutes = require('./routes/user.routes');
-const workflowRoutes = require('./routes/workflow.routes');
 const postRoutes = require('./routes/post.routes');
-
+const adminRoutes = require('./routes/admin.routes');
+const workflowRoutes = require('./routes/workflow.routes');
 
 app.use(cors());
 app.use(express.json());
 app.use(morgan('dev'));
 app.use('/api/users', userRoutes);
-
-app.use('/api/auth', authRoutes);
 app.use('/api/posts', postRoutes);
+
+app.use('/api/admin', adminRoutes);
 app.use('/api/workflows', workflowRoutes);
+app.use('/api/auth', authRoutes);
 
 app.get('/', (req, res) => res.send('API running'));
-
 connectDB();
 
 module.exports = app;

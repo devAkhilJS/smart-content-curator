@@ -1,1 +1,21 @@
-<p>login works!</p>
+<form [formGroup]="loginForm" (ngSubmit)="submit()">
+  <h2>Login</h2>
+  <div>
+    <label>Email</label>
+    <input formControlName="email" type="email" />
+    <div *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched">
+      Valid email required
+    </div>
+  </div>
+  <div>
+    <label>Password</label>
+    <input formControlName="password" type="password" />
+    <div *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
+      Password required
+    </div>
+  </div>
+  <button type="submit" [disabled]="loading">Login</button>
+  <div *ngIf="error" class="error">{{ error }}</div>
+  <a routerLink="/auth/forgot-password">Forgot password?</a>
+  <a routerLink="/auth/register">Register</a>
+</form>

@@ -1,0 +1,191 @@
+{
+  "name": "Weekly Analytics Report for admin",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "f8de434b-adf4-4d7f-8bca-dc2fd456e714",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -180,
+        0
+      ],
+      "id": "219fda76-2325-4cba-8f1a-c7e6bb2eb90a",
+      "name": "Webhook",
+      "webhookId": "f8de434b-adf4-4d7f-8bca-dc2fd456e714"
+    },
+    {
+      "parameters": {
+        "url": "https://0f2e19b70feb.ngrok-free.app/api/admin/analytics/report?range=last_week",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODg3MWRjNzI0NmFiMGM5YmI3N2M3ZWUiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3NTQwMzgzNjEsImV4cCI6MTc1NDY0MzE2MX0.jLaQgh_gGPvLt6As2EEjvhpn1EZGvDU0Si_U13RYBjI"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        100,
+        120
+      ],
+      "id": "28a374cc-d81d-479c-bf26-733793ddd038",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "jsCode": "const stats = items[0].json;\n\nconst emails = stats.emails ? stats.emails.join(', ') : stats.email || '';\n\nlet message = `<p>Hello,</p>\n<p>We hope this message finds you well! Here is your latest Weekly Analytics Report:</p>`;\n\nmessage += `<h2>📊 Weekly Analytics Report</h2>`;\nmessage += `<p><b>Total Posts:</b> ${stats.totalPosts}</p>`;\nmessage += `<p><b>Active Users:</b> ${stats.activeUsers}</p>`;\nmessage += `<p><b>Top Author:</b> ${stats.topAuthor.name} (${stats.topAuthor.posts} posts)</p>`;\nmessage += `<p><b>Failed Posts:</b> ${stats.failedPosts}</p>`;\nmessage += `<p><b>Most Active Day:</b> ${stats.mostActiveDay}</p>`;\n\n\nreturn [{ json: { emails, message } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        600,
+        0
+      ],
+      "id": "1d06f9c2-6f0b-4a09-8701-d58ce48b3485",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.emails }}",
+        "subject": "Weekly Analytics Report",
+        "message": "={{ $json.message }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        840,
+        0
+      ],
+      "id": "03ce38f9-118b-49f2-aeb3-470ab5ec5ae4",
+      "name": "Send a message",
+      "webhookId": "96c81a29-c4ec-43fa-b2f1-f8560f36d29c",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "0YXf8hQbvhi3WFwV",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://0f2e19b70feb.ngrok-free.app/api/users?role=admin ",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODg3MWRjNzI0NmFiMGM5YmI3N2M3ZWUiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3NTM4NjczMjYsImV4cCI6MTc1NDQ3MjEyNn0.eHJNEbRFdBLXvBoAh-yWdVQCUE6DitLFMmKWVAtYpdI"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        100,
+        -80
+      ],
+      "id": "87226c42-6560-467f-a2f8-c6240e634f18",
+      "name": "HTTP Request1"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineAll",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        380,
+        20
+      ],
+      "id": "f60819d0-ed0e-40cf-8035-ac58eba35148",
+      "name": "Merge"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "e8423377-4929-4516-b57c-d43780263867",
+  "meta": {
+    "instanceId": "83b761825fe009c350ac0b22db13da3271ed1c3fb3c350cd3dffb40fbed22eb0"
+  },
+  "id": "ePFO7PIzvkNB7PyB",
+  "tags": []
+}

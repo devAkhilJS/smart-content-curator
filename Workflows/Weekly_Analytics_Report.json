@@ -1,0 +1,196 @@
+{
+  "name": "Weekly Analytics Report",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 8 * * 1"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "4e02c23a-9adc-4327-b772-c6a0d4d020f4",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "url": "https://0f2e19b70feb.ngrok-free.app/api/admin/analytics/report?range=last_week",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODg3MWRjNzI0NmFiMGM5YmI3N2M3ZWUiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3NTQwMzgzNjEsImV4cCI6MTc1NDY0MzE2MX0.jLaQgh_gGPvLt6As2EEjvhpn1EZGvDU0Si_U13RYBjI"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        240,
+        100
+      ],
+      "id": "fce97b03-3f85-4e4a-b662-12fb3f319dcd",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "jsCode": "const stats = items[0].json;\n\nconst emails = stats.emails ? stats.emails.join(', ') : stats.email || '';\n\nlet message = `<p>Hello,</p>\n<p>We hope this message finds you well! Here is your latest Weekly Analytics Report:</p>`;\n\nmessage += `<h2> Weekly Analytics Report</h2>`;\nmessage += `<p><b>Total Posts:</b> ${stats.totalPosts}</p>`;\nmessage += `<p><b>Active Users:</b> ${stats.activeUsers}</p>`;\nmessage += `<p><b>Top Author:</b> ${stats.topAuthor.name} (${stats.topAuthor.posts} posts)</p>`;\nmessage += `<p><b>Failed Posts:</b> ${stats.failedPosts}</p>`;\nmessage += `<p><b>Most Active Day:</b> ${stats.mostActiveDay}</p>`;\n\n\nreturn [{ json: { emails, message } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        740,
+        -20
+      ],
+      "id": "b558e609-6ea9-4203-9d5f-b74c572ffd92",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.emails }}",
+        "subject": "Weekly Analytics Report",
+        "message": "={{ $json.message }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        980,
+        -20
+      ],
+      "id": "0151da58-2b41-4f7d-b583-94f8f49f3c6f",
+      "name": "Send a message",
+      "webhookId": "96c81a29-c4ec-43fa-b2f1-f8560f36d29c",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "0YXf8hQbvhi3WFwV",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://0f2e19b70feb.ngrok-free.app/api/users?role=admin ",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODg3MWRjNzI0NmFiMGM5YmI3N2M3ZWUiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3NTM4NjczMjYsImV4cCI6MTc1NDQ3MjEyNn0.eHJNEbRFdBLXvBoAh-yWdVQCUE6DitLFMmKWVAtYpdI"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        240,
+        -100
+      ],
+      "id": "c24a244a-cb2c-4b84-81a1-69976d3186e5",
+      "name": "HTTP Request1"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineAll",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        520,
+        0
+      ],
+      "id": "dc8a9369-5683-422a-827c-804f32dbc5e1",
+      "name": "Merge"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "30c61502-b88c-4802-8294-dc6dbe83db9c",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "83b761825fe009c350ac0b22db13da3271ed1c3fb3c350cd3dffb40fbed22eb0"
+  },
+  "id": "we7c7tLWWPNIvdLN",
+  "tags": []
+}

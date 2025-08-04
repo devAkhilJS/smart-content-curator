@@ -14,3 +14,11 @@ exports.login = (req, res, next) => {
   }
   next();
 };
+
+exports.forgotPassword = (req, res, next) => {
+  const { email } = req.body;
+  if (!email) {
+    return res.status(400).json({ error: 'Email is required' });
+  }
+  next();
+};

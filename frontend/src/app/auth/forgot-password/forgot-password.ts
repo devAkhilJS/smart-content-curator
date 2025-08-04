@@ -4,6 +4,7 @@ import { AuthService } from '../../core/services/auth';
 import { CommonModule } from '@angular/common';
 @Component({
   selector: 'app-forgot-password',
+  standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './forgot-password.html',
   styleUrl: './forgot-password.scss'

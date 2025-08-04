@@ -1,5 +1,6 @@
 const User = require('../models/user.model');
 const jwt = require('jsonwebtoken');
+const nodemailer = require('nodemailer');
 
 exports.register = async (req, res) => {
   try {
@@ -32,5 +33,40 @@ exports.login = async (req, res) => {
     res.json({ token, user: { id: user._id, name: user.name, email: user.email, role: user.role } });
   } catch (err) {
     res.status(400).json({ error: err.message });
+  }
+};
+exports.forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(200).json({ message: 'the link has been sent to your account.' });
+    }
+
+    
+    const resetToken = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    
+
+    
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS, 
+      },
+    });
+    const resetUrl = `http://localhost:4200/reset-password?token=${resetToken}`;
+
+    await transporter.sendMail({
+      to: email,
+      subject: 'Password Reset',
+      html: `<p>You requested a password reset. <a href="${resetUrl}">Click here to reset your password</a></p>`,
+    });
+
+    res.status(200).json({ message: 'the link has been sent to your account.' });
+  } catch (err) {
+    console.error('Forgot Password Error:', err); 
+    res.status(500).json({ error: err.message });
   }
 };

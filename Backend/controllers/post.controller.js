@@ -151,3 +151,47 @@ exports.getDraftPosts = async (req, res) => {
   }
 };
 
+exports.getPostStats = async (req, res) => {
+  try {
+    let query = {};
+    if (req.user.role !== 'admin') {
+      query.author = req.user.userId;
+    }
+
+    const [
+      totalPosts,
+      draftPosts,
+      scheduledPosts,
+      publishedPosts,
+      pendingPosts,
+      rejectedPosts
+    ] = await Promise.all([
+      Post.countDocuments(query),
+      Post.countDocuments({ ...query, status: 'draft' }),
+      Post.countDocuments({ ...query, status: 'scheduled' }),
+      Post.countDocuments({ ...query, status: 'published' }),
+      Post.countDocuments({ ...query, status: 'pending' }),
+      Post.countDocuments({ ...query, status: 'rejected' })
+    ]);
+
+    const since = new Date();
+    since.setDate(since.getDate() - 7);
+    const recentPosts = await Post.countDocuments({
+      ...query,
+      createdAt: { $gte: since }
+    });
+
+    res.json({
+      total: totalPosts,
+      draft: draftPosts,
+      scheduled: scheduledPosts,
+      published: publishedPosts,
+      pending: pendingPosts,
+      rejected: rejectedPosts,
+      recent: recentPosts
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+

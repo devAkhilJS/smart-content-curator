@@ -1,0 +1,25 @@
+<mat-card>
+  <mat-card-title>My Posts</mat-card-title>
+  <mat-table [dataSource]="dataSource">
+    <ng-container matColumnDef="title">
+      <mat-header-cell *matHeaderCellDef> Title </mat-header-cell>
+      <mat-cell *matCellDef="let post"> {{ post.title }} </mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="status">
+      <mat-header-cell *matHeaderCellDef> Status </mat-header-cell>
+      <mat-cell *matCellDef="let post"> {{ post.status }} </mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="scheduledAt">
+      <mat-header-cell *matHeaderCellDef> Scheduled </mat-header-cell>
+      <mat-cell *matCellDef="let post"> {{ post.scheduledAt | date:'short' }} </mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="actions">
+      <mat-header-cell *matHeaderCellDef> Actions </mat-header-cell>
+      <mat-cell *matCellDef="let post">
+        <button mat-icon-button [routerLink]="['/posts', post._id]"><mat-icon>visibility</mat-icon></button>
+      </mat-cell>
+    </ng-container>
+    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+  </mat-table>
+</mat-card>

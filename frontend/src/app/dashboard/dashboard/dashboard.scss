@@ -1,0 +1,14 @@
+.dashboard-container {
+  display: flex;
+  flex-wrap: wrap;
+  .widgets {
+    flex: 1 1 250px;
+    margin-right: 16px;
+  }
+  .main-content {
+    flex: 3 1 600px;
+  }
+}
+.spacer {
+  flex: 1 1 auto;
+}

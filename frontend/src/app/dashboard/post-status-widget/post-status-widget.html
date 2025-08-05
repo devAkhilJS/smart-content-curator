@@ -1,0 +1,18 @@
+<div class="status-widgets">
+  <mat-card>
+    <mat-card-title>Drafts</mat-card-title>
+    <mat-card-content>{{ stats.drafts || 0 }}</mat-card-content>
+  </mat-card>
+  <mat-card>
+    <mat-card-title>Scheduled</mat-card-title>
+    <mat-card-content>{{ stats.scheduled || 0 }}</mat-card-content>
+  </mat-card>
+  <mat-card>
+    <mat-card-title>Published</mat-card-title>
+    <mat-card-content>{{ stats.published || 0 }}</mat-card-content>
+  </mat-card>
+  <mat-card>
+    <mat-card-title>Failed</mat-card-title>
+    <mat-card-content>{{ stats.failed || 0 }}</mat-card-content>
+  </mat-card>
+</div>

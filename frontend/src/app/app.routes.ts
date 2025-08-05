@@ -18,5 +18,9 @@ export const routes: Routes = [
         loadComponent: () => import('./auth/forgot-password/forgot-password').then(m => m.ForgotPassword)
       }
     ]
+  },
+  {
+    path: 'dashboard',
+    loadChildren: () => import('./dashboard/dashboard-routing-module').then(m => m.routes)
   }
 ];

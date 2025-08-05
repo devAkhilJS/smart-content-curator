@@ -11,6 +11,7 @@ const userRoutes = require('./routes/user.routes');
 const postRoutes = require('./routes/post.routes');
 const adminRoutes = require('./routes/admin.routes');
 const workflowRoutes = require('./routes/workflow.routes');
+const analyticsRoutes = require('./routes/analytics.routes');
 
 app.use(cors());
 app.use(express.json());
@@ -21,6 +22,7 @@ app.use('/api/posts', postRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/workflows', workflowRoutes);
 app.use('/api/auth', authRoutes);
+app.use('/api/analytics', analyticsRoutes);
 
 app.get('/', (req, res) => res.send('API running'));
 connectDB();

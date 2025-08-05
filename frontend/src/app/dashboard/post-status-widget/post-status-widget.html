@@ -1,18 +1,47 @@
 <div class="status-widgets">
-  <mat-card>
-    <mat-card-title>Drafts</mat-card-title>
-    <mat-card-content>{{ stats.drafts || 0 }}</mat-card-content>
-  </mat-card>
-  <mat-card>
-    <mat-card-title>Scheduled</mat-card-title>
-    <mat-card-content>{{ stats.scheduled || 0 }}</mat-card-content>
-  </mat-card>
-  <mat-card>
-    <mat-card-title>Published</mat-card-title>
-    <mat-card-content>{{ stats.published || 0 }}</mat-card-content>
-  </mat-card>
-  <mat-card>
-    <mat-card-title>Failed</mat-card-title>
-    <mat-card-content>{{ stats.failed || 0 }}</mat-card-content>
-  </mat-card>
+
+  <div style="display: none;">
+    isLoading: {{ isLoading }}, 
+    error: {{ error }}, 
+    stats: {{ stats | json }}
+  </div>
+  
+  <div *ngIf="isLoading" class="loading">Loading statistics...</div>
+  
+  <div *ngIf="error && !isLoading" class="error">
+    {{ error }}
+    <button mat-button color="primary" (click)="retry()">Retry</button>
+  </div>
+  
+  <ng-container *ngIf="!isLoading && !error && stats">
+    <mat-card class="stat-card">
+      <mat-card-title>Total Posts</mat-card-title>
+      <p class="stat-number">{{ stats.total || 0 }}</p>
+    </mat-card>
+    
+    <mat-card class="stat-card">
+      <mat-card-title>Draft Posts</mat-card-title>
+      <p class="stat-number">{{ stats.draft || 0 }}</p>
+    </mat-card>
+    
+    <mat-card class="stat-card">
+      <mat-card-title>Scheduled Posts</mat-card-title>
+      <p class="stat-number">{{ stats.scheduled || 0 }}</p>
+    </mat-card>
+    
+    <mat-card class="stat-card">
+      <mat-card-title>Published Posts</mat-card-title>
+      <p class="stat-number">{{ stats.published || 0 }}</p>
+    </mat-card>
+    
+    <mat-card class="stat-card">
+      <mat-card-title>Pending Posts</mat-card-title>
+      <p class="stat-number">{{ stats.pending || 0 }}</p>
+    </mat-card>
+    
+    <mat-card class="stat-card">
+      <mat-card-title>Recent Posts</mat-card-title>
+      <p class="stat-number">{{ stats.recent || 0 }}</p>
+    </mat-card>
+  </ng-container>
 </div>

@@ -1,8 +1,40 @@
 .status-widgets {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   gap: 16px;
-  mat-card {
-    flex: 1;
-    text-align: center;
+  margin: 16px 0;
+}
+
+.stat-card {
+  text-align: center;
+  padding: 16px;
+  
+  mat-card-title {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 8px;
   }
+}
+
+.stat-number {
+  font-size: 32px;
+  font-weight: bold;
+  color: #1976d2;
+  margin: 0;
+}
+
+.loading {
+  text-align: center;
+  padding: 20px;
+  color: #666;
+  grid-column: 1 / -1;
+}
+
+.error {
+  background-color: #ffebee;
+  color: #c62828;
+  padding: 12px;
+  border-radius: 4px;
+  border-left: 4px solid #c62828;
+  grid-column: 1 / -1;
 }

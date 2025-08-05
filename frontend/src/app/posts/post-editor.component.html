@@ -1,0 +1,44 @@
+<mat-card>
+  <mat-card-title>{{ postId ? 'Edit Post' : 'Create Post' }}</mat-card-title>
+  <div *ngIf="error" class="error">{{ error }}</div>
+  <form [formGroup]="postForm" (ngSubmit)="onSubmit()">
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Title</mat-label>
+      <input matInput formControlName="title" required />
+      <mat-error *ngIf="postForm.get('title')?.hasError('required')">
+        Title is required
+      </mat-error>
+    </mat-form-field>
+    
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Content</mat-label>
+      <textarea matInput formControlName="body" rows="6" required></textarea>
+      <mat-error *ngIf="postForm.get('body')?.hasError('required')">
+        Content is required
+      </mat-error>
+    </mat-form-field>
+    
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Status</mat-label>
+      <mat-select formControlName="status">
+        <mat-option value="draft">Draft</mat-option>
+        <mat-option value="scheduled">Scheduled</mat-option>
+        <mat-option value="published">Published</mat-option>
+      </mat-select>
+    </mat-form-field>
+    
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Scheduled At</mat-label>
+      <input matInput formControlName="scheduledAt" type="datetime-local" />
+    </mat-form-field>
+    
+    <div class="button-group">
+      <button mat-raised-button color="primary" type="submit" [disabled]="isSaving || postForm.invalid">
+        {{ isSaving ? 'Saving...' : (postId ? 'Update' : 'Create') }}
+      </button>
+      <button mat-button type="button" [routerLink]="['/dashboard']">
+        Cancel
+      </button>
+    </div>
+  </form>
+</mat-card>

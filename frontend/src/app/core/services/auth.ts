@@ -27,7 +27,17 @@ export class AuthService {
     localStorage.removeItem('token');
   }
 
+  getToken(): string | null {
+    return localStorage.getItem('token');
+  }
+
   isAuthenticated(): boolean {
     return !!localStorage.getItem('token');
+  }
+
+  setDevToken() {
+    const devToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODkxMTExNjRmNDFhMWJiNmE5YzhmZTEiLCJyb2xlIjoidXNlciIsImlhdCI6MTc1NDM5Nzg4NiwiZXhwIjoxNzU1MDAyNjg2fQ.zIsz20Sdq18H6kuL342WcG8mKvSiukW95Ji3-htkosg';
+    localStorage.setItem('token', devToken);
+    console.log('Development token set successfully');
   }
 }

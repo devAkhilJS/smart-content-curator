@@ -1,5 +1,11 @@
 <div class="dashboard-container">
-  <h1>Dashboard</h1>
+  <div class="dashboard-header">
+    <h1>Dashboard</h1>
+    <button mat-raised-button color="primary" routerLink="/posts/new">
+      <mat-icon>add</mat-icon>
+      Create New Post
+    </button>
+  </div>
   <app-post-status-widget></app-post-status-widget>
   <app-post-list></app-post-list>
 </div>

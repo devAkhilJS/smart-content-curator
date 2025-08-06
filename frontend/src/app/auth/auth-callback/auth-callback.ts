@@ -14,6 +14,7 @@ import { CommonModule } from '@angular/common';
       </div>
     </div>
   `,
+  
   styles: [`
     .callback-container {
       display: flex;

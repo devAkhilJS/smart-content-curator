@@ -43,8 +43,18 @@ const UserSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ['active', 'disabled'],
-      default: 'active',
+      enum: ['active', 'disabled', 'pending'],
+      default: 'pending',
+    },
+    verificationToken: {
+      type: String,
+    },
+    verificationTokenExpires: {
+      type: Date,
+    },
+    isEmailVerified: {
+      type: Boolean,
+      default: false,
     }
   },
   { timestamps: true }

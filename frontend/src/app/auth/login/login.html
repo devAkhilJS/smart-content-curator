@@ -1,21 +1,58 @@
 <form [formGroup]="loginForm" (ngSubmit)="submit()">
   <h2>Login</h2>
   <div>
-    <label>Email</label>
-    <input formControlName="email" type="email" />
-    <div *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched">
+    <label>Username (Email)</label>
+    <input formControlName="username" type="email" />
+    <div *ngIf="loginForm.get('username')?.invalid && loginForm.get('username')?.touched">
       Valid email required
     </div>
   </div>
   <div>
     <label>Password</label>
-    <input formControlName="password" type="password" />
+    <div class="password-input-container">
+      <input 
+        formControlName="password" 
+        [type]="showPassword ? 'text' : 'password'" 
+      />
+      <button 
+        type="button" 
+        class="password-toggle" 
+        (click)="togglePasswordVisibility()"
+        [attr.aria-label]="showPassword ? 'Hide password' : 'Show password'"
+      >
+        {{ showPassword ? '' : '' }}
+      </button>
+    </div>
     <div *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
       Password required
     </div>
   </div>
-  <button type="submit" [disabled]="loading">Login</button>
+  
+  <button type="submit" [disabled]="loading || loginForm.invalid" class="login-btn">
+    <span *ngIf="loading" class="spinner"></span>
+    {{ loading ? 'Logging in...' : 'Login' }}
+  </button>
   <div *ngIf="error" class="error">{{ error }}</div>
-  <a routerLink="/auth/forgot-password">Forgot password?</a>
-  <a routerLink="/auth/register">Register</a>
+  <div class="social-login-section">
+    <div class="divider">
+      <span>Or continue with</span>
+    </div>
+    
+    <div class="social-buttons">
+      <button 
+        type="button" 
+        class="social-btn google-btn" 
+        (click)="loginWithGoogle()"
+        [disabled]="loading"
+      >
+        <span class="social-icon"></span>
+        Login with Google
+      </button>
+    </div>
+  </div>
+  
+  <div class="auth-links">
+    <a routerLink="/auth/forgot-password">Forgot password?</a>
+    <a routerLink="/auth/register">Register</a>
+  </div>
 </form>

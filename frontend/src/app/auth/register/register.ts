@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, AbstractControl, ValidationErrors } from '@angular/forms';
 import { AuthService } from '../../core/services/auth';
 import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -15,6 +15,9 @@ export class Register  {
   registerForm: FormGroup;
   loading = false;
   error: string | null = null;
+  isRegistered = false;
+  userEmail = '';
+  resendingEmail = false;
 
   constructor(
     private fb: FormBuilder,
@@ -24,22 +27,51 @@ export class Register  {
     this.registerForm = this.fb.group({
       name: ['', [Validators.required]],
       email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(6)]]
-    });
+      password: ['', [Validators.required, Validators.minLength(6)]],
+      confirmPassword: ['', [Validators.required]]
+    }, { validators: this.passwordMatchValidator });
   }
-
+  passwordMatchValidator(control: AbstractControl): ValidationErrors | null {
+    const password = control.get('password');
+    const confirmPassword = control.get('confirmPassword');
+    
+    if (password && confirmPassword && password.value !== confirmPassword.value) {
+      return { passwordMismatch: true };
+    }
+    return null;
+  }
   submit() {
     if (this.registerForm.invalid) return;
     this.loading = true;
     this.error = null;
-    this.auth.register(this.registerForm.value).subscribe({
+    const { name, email, password } = this.registerForm.value;
+    this.auth.register({ name, email, password }).subscribe({
       next: () => {
-        this.router.navigate(['/auth/login']);
+        this.userEmail = email;
+        this.isRegistered = true;
+        this.loading = false;
       },
-      error: err => {
+      error: (err: any) => {
         this.error = err.error?.message || 'Registration failed';
         this.loading = false;
       }
     });
+  }
+  resendVerificationEmail() {
+    this.resendingEmail = true;
+    this.error = null;
+    this.auth.resendVerificationEmail(this.userEmail).subscribe({
+      next: () => {
+        this.resendingEmail = false;
+      },
+      error: (err: any) => {
+        this.error = err.error?.message || 'Failed to resend verification email';
+        this.resendingEmail = false;
+      }
+    });
+  }
+
+  goToLogin() {
+    this.router.navigate(['/auth/login']);
   }
 }

@@ -12,8 +12,19 @@ const postRoutes = require('./routes/post.routes');
 const adminRoutes = require('./routes/admin.routes');
 const workflowRoutes = require('./routes/workflow.routes');
 const analyticsRoutes = require('./routes/analytics.routes');
+const corsOptions = {
+  origin: [
+    'http://localhost:4200',
+    'http://localhost:5000',
+    process.env.FRONTEND_URL
+  ].filter(Boolean),
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  optionsSuccessStatus: 200
+};
 
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(morgan('dev'));
 app.use('/api/users', userRoutes);

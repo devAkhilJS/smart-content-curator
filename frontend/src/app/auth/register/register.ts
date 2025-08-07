@@ -3,7 +3,6 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, AbstractContro
 import { AuthService } from '../../core/services/auth';
 import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
-
 @Component({
   selector: 'app-register',
   standalone: true,
@@ -40,10 +39,12 @@ export class Register  {
     }
     return null;
   }
+
   submit() {
     if (this.registerForm.invalid) return;
     this.loading = true;
     this.error = null;
+    
     const { name, email, password } = this.registerForm.value;
     this.auth.register({ name, email, password }).subscribe({
       next: () => {
@@ -57,9 +58,11 @@ export class Register  {
       }
     });
   }
+
   resendVerificationEmail() {
     this.resendingEmail = true;
     this.error = null;
+    
     this.auth.resendVerificationEmail(this.userEmail).subscribe({
       next: () => {
         this.resendingEmail = false;

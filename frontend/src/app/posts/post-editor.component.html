@@ -1,6 +1,13 @@
 <mat-card>
   <mat-card-title>{{ postId ? 'Edit Post' : 'Create Post' }}</mat-card-title>
-  <div *ngIf="error" class="error">{{ error }}</div>
+  <div *ngIf="error" class="error-message">
+    <mat-icon>error</mat-icon>
+    {{ error }}
+  </div>
+  <div *ngIf="warning" class="warning-message">
+    <mat-icon>warning</mat-icon>
+    {{ warning }}
+  </div>
   <form [formGroup]="postForm" (ngSubmit)="onSubmit()">
     <mat-form-field appearance="fill" class="full-width">
       <mat-label>Title</mat-label>
@@ -9,7 +16,6 @@
         Title is required
       </mat-error>
     </mat-form-field>
-    
     <mat-form-field appearance="fill" class="full-width">
       <mat-label>Content</mat-label>
       <textarea matInput formControlName="body" rows="6" required></textarea>
@@ -17,24 +23,40 @@
         Content is required
       </mat-error>
     </mat-form-field>
-    
     <mat-form-field appearance="fill" class="full-width">
       <mat-label>Status</mat-label>
       <mat-select formControlName="status">
         <mat-option value="draft">Draft</mat-option>
         <mat-option value="scheduled">Scheduled</mat-option>
-        <mat-option value="published">Published</mat-option>
+        <mat-option value="pending">Pending Review</mat-option>
       </mat-select>
     </mat-form-field>
-    
-    <mat-form-field appearance="fill" class="full-width">
-      <mat-label>Scheduled At</mat-label>
-      <input matInput formControlName="scheduledAt" type="datetime-local" />
-    </mat-form-field>
-    
+    <div *ngIf="postForm.get('status')?.value === 'scheduled'" class="scheduling-container">
+      <mat-form-field appearance="fill" class="half-width">
+        <mat-label>Scheduled Date</mat-label>
+        <input matInput formControlName="scheduledDate" type="date" 
+               required />
+        <mat-error *ngIf="postForm.get('scheduledDate')?.hasError('required')">
+          Date is required for scheduled posts
+        </mat-error>
+      </mat-form-field>
+      <mat-form-field appearance="fill" class="half-width">
+        <mat-label>Scheduled Time</mat-label>
+        <input matInput formControlName="scheduledTime" type="time" 
+               required />
+        <mat-error *ngIf="postForm.get('scheduledTime')?.hasError('required')">
+          Time is required for scheduled posts
+        </mat-error>
+      </mat-form-field>
+      <mat-hint class="scheduling-hint">Select a future date and time for scheduling (minimum 1 minute from now)</mat-hint>
+      <mat-error *ngIf="scheduledDateError" class="scheduling-error">
+        {{ scheduledDateError }}
+      </mat-error>
+    </div>
     <div class="button-group">
-      <button mat-raised-button color="primary" type="submit" [disabled]="isSaving || postForm.invalid">
-        {{ isSaving ? 'Saving...' : (postId ? 'Update' : 'Create') }}
+      <button mat-raised-button color="primary" type="submit" [disabled]="!canSubmit">
+        <mat-icon *ngIf="isSaving">hourglass_empty</mat-icon>
+        <span>{{ isSaving ? 'Saving...' : (postId ? 'Update Post' : 'Create Post') }}</span>
       </button>
       <button mat-button type="button" [routerLink]="['/dashboard']">
         Cancel

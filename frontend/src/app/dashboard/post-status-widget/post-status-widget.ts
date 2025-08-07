@@ -2,14 +2,14 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
-import { Router, RouterModule } from '@angular/router';
-import { Post } from '../../core/services/post';
+import { Router } from '@angular/router';
+import { PostService } from '../../core/services/post';
 import { AuthService } from '../../core/services/auth';
 
 @Component({
   selector: 'app-post-status-widget',
   standalone: true,
-  imports: [CommonModule, MatCardModule, MatButtonModule, RouterModule],
+  imports: [CommonModule, MatCardModule, MatButtonModule],
   templateUrl: './post-status-widget.html',
   styleUrl: './post-status-widget.scss'
 })
@@ -19,7 +19,7 @@ export class PostStatusWidget implements OnInit {
   error: string | null = null;
 
   constructor(
-    private post: Post,
+    private post: PostService,
     private authService: AuthService,
     private router: Router,
     private cdr: ChangeDetectorRef

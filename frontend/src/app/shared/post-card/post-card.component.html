@@ -1,0 +1,81 @@
+<mat-card class="post-card" [class.hover-effect]="true">
+  <mat-card-header class="post-header">
+    <div class="post-title-section">
+      <mat-card-title class="post-title" [title]="post.title">
+        {{ post.title }}
+      </mat-card-title>
+      <div class="status-badge" [style]="statusStyle">
+        {{ post.status | titlecase }}
+      </div>
+    </div>
+  </mat-card-header>
+  <mat-card-content class="post-content">
+    <p class="content-preview">
+      {{ truncateContent(post.body, 150) }}
+    </p>
+    <div class="post-meta">
+      <div class="date-info">
+        <mat-icon class="meta-icon">schedule</mat-icon>
+        <span class="meta-text">{{ displayDate }}</span>
+      </div>
+      <div class="channels-section" *ngIf="channelIcons.length > 0">
+        <span class="channels-label">Channels:</span>
+        <div class="channel-icons">
+          <mat-icon 
+            *ngFor="let channel of channelIcons" 
+            class="channel-icon"
+            [matTooltip]="channel.name"
+            matTooltipPosition="above">
+            {{ channel.icon }}
+          </mat-icon>
+        </div>
+      </div>
+      <div class="tags-section" *ngIf="post.tags && post.tags.length > 0">
+        <mat-chip-set class="tag-chips">
+          <mat-chip *ngFor="let tag of post.tags.slice(0, 3)" class="tag-chip">
+            {{ tag }}
+          </mat-chip>
+          <mat-chip *ngIf="post.tags.length > 3" class="tag-chip more-tags">
+            +{{ post.tags.length - 3 }} more
+          </mat-chip>
+        </mat-chip-set>
+      </div>
+    </div>
+  </mat-card-content>
+  <mat-card-actions class="post-actions" align="end">
+    <button 
+      mat-icon-button 
+      color="primary"
+      matTooltip="View Post"
+      matTooltipPosition="above"
+      (click)="onView()">
+      <mat-icon>visibility</mat-icon>
+    </button>
+
+    <button 
+      mat-icon-button 
+      color="accent"
+      matTooltip="Edit Post"
+      matTooltipPosition="above"
+      (click)="onEdit()">
+      <mat-icon>edit</mat-icon>
+    </button>
+
+    <button 
+      mat-icon-button
+      matTooltip="Duplicate Post"
+      matTooltipPosition="above"
+      (click)="onDuplicate()">
+      <mat-icon>content_copy</mat-icon>
+    </button>
+
+    <button 
+      mat-icon-button 
+      color="warn"
+      matTooltip="Delete Post"
+      matTooltipPosition="above"
+      (click)="onDelete()">
+      <mat-icon>delete</mat-icon>
+    </button>
+  </mat-card-actions>
+</mat-card>
